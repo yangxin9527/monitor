@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Monitor testPage</title>
+    <style>
+      button {
+        width: auto;
+        height: 32px;
+        font-size: 14px;
+        border-radius: 3px;
+        background: linear-gradient(180deg, #648cff 0%, #3973ff 100%);
+        color: #fff;
+      }
+    </style>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  </head>
+  <body>
+    <h2>模拟错误(打开console 查看具体报错)</h2>
+
+    <!-- ajax请求错误 -->
+    <button class="err-ajax-request">ajax请求错误</button>
+    <button class="timeout-ajax-request">ajax超时</button>
+    <button class="fetch-request">fetch错误</button>
+    <hr />
+    <button class="js-running-error">js执行错误</button>
+    <button class="promise-error">Promise 错误</button>
+    <hr />
+
+    <!-- js内存泄漏 -->
+    <!-- <p>js内存泄漏</p>
+  <button>js内存泄漏</button>
+  <hr> -->
+
+    <!-- 资源没有加载 -->
+    <button class="err-js-load">js加载出错</button>
+    <button class="err-css-load">css加载出错</button>
+    <button class="err-image-load">image加载出错</button>
+    <hr />
+    <div id="app">
+      <button @click="handleClick">模拟 Vue 错误</button>
+    </div>
+    <hr />
+    <button class="destory">销毁实例</button>
+    <hr />
+    <button class="rrweb">rrweb 重播</button>
+    <hr />
+
+    <script defer>
+      document.addEventListener("DOMContentLoaded", () => {
+        window._monitor.init({
+          https: false,
+          post: false,
+          url: "localhost:4000/error",
+          record: true,
+        });
+      });
+    </script>
+    <script defer src="./createError.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/rrweb-player@latest/dist/style.css"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/rrweb-player@latest/dist/index.js"></script>
+    <script>
+      /**
+       * rrweb 回播
+       */
+      var rrwebBtn = document.getElementsByClassName("rrweb")[0];
+      let ele;
+      rrwebBtn.onclick = function () {
+        if (ele) {
+          document.body.removeChild(ele);
+        }
+        ele = document.createElement("div");
+
+        document.body.appendChild(ele);
+
+        fetch("http://localhost:3001/getData", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            console.log("打印res", res);
+            if (res.events) {
+              new rrwebPlayer({
+                target: ele,
+                data: { events: res.events },
+                unpackFn: rrwebPlayer.unpack,
+              });
+            } else {
+              alert("暂无错误记录");
+            }
+          });
+      };
+    </script>
+  </body>
+</html>

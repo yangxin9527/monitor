@@ -1,27 +1,27 @@
 /*
  *
  * 该文件的目的是为了在执行npm run build 之后自动生成README.md 和package.json
- * 
- * 
+ *
+ *
  */
 
 const fs = require("fs");
 const path = require("path");
 
-const package =  fs.readFileSync('./version.json');
-const readme = fs.readFileSync('./README.md');
+const versionInfo = fs.readFileSync("./version.json");
+const readme = fs.readFileSync("./README.md");
 
-var packagePath = path.join(__dirname, './dist/package.json'); 
-var readmePath = path.join(__dirname, './dist/README.md'); 
+const packagePath = path.join(__dirname, "./dist/package.json");
+const readmePath = path.join(__dirname, "./dist/README.md");
 
-fs.writeFile(packagePath, package, function(err) {
+fs.writeFile(packagePath, versionInfo, (err) => {
   if (err) {
-      return console.log(err);
+    return console.log(err);
   }
 });
 
-fs.writeFile(readmePath, readme, function(err) {
+fs.writeFile(readmePath, readme, (err) => {
   if (err) {
-      return console.log(err);
+    return console.log(err);
   }
 });
