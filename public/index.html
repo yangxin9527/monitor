@@ -51,10 +51,9 @@
     <script defer>
       document.addEventListener("DOMContentLoaded", () => {
         window._monitor.init({
-          https: false,
-          post: false,
-          url: "localhost:4000/error",
+          url: "http://localhost:3001/reportData",
           record: true,
+          id: "test_id",
         });
       });
     </script>

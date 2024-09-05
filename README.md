@@ -16,9 +16,32 @@
 
 用于传入 `initMonitor` 的配置项。
 
-| 属性   | 参数    | 默认值 | 可选值    | 说明                     |
-| :----- | :------ | :----- | :-------- | ------------------------ |
-| method | String  | POST   | POST，GET | 埋点上报请求方法         |
-| url    | String  | -      | -         | 埋点上报 url 地址        |
-| id     | String  | -      | -         | 标识当前用户             |
-| record | Boolean | false  | -         | 是否录制用户操作用于回放 |
+| 属性   | 参数    | 默认值 | 可选值 | 说明                     |
+| :----- | :------ | :----- | :----- | ------------------------ |
+| url    | String  | -      | -      | 埋点上报 url 地址        |
+| id     | String  | -      | -      | 用户标识                 |
+| record | Boolean | false  | -      | 是否录制用户操作用于回放 |
+
+### 创建/引入
+
+```
+<script>
+var script = document.createElement("script");
+script.crossOrigin = "anonymous";
+script.src = `https://test.com/monitor.1.0.2.js`;
+document.body.appendChild(script);
+script.addEventListener('load', (e) => {
+    window._monitor.init({
+        url: "http://localhost:3001/reportData",
+        record: true,
+        id: "test_id",
+    });
+});
+</script>
+```
+
+### 销毁实例
+
+```
+window._monitor.destroy();
+```

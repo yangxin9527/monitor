@@ -21,23 +21,29 @@ export const monitor = {
 const report = (type, data = {}) => {
   console.log("--------报错收集-------------");
   console.log(type, data);
-  const len = monitor.recordData.length;
-  //每次报错发送最近2次录制的内容
-  const events: any = monitor.recordData.slice(-2);
-
-  // /save-data
-  // 错误上报接口
-  fetch("http://localhost:3001/reportData", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+  if (monitor?.config?.url) {
+    //每次报错发送最近2次录制的内容
+    let json: any = {
       type,
       data,
-      events: events.flat(),
-    }),
-  }).catch((err) => {
-    console.error("错误上报失败：", err);
-  });
+    };
+    if (monitor.config.record) {
+      json.events = (monitor.recordData.slice(-2) as any).flat();
+    }
+    if (monitor?.config?.id) {
+      json.id = monitor?.config?.id;
+    }
+    // 错误上报接口
+    fetch(monitor.config.url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(json),
+    }).catch((err) => {
+      console.error("错误上报失败：", err);
+    });
+  } else {
+    console.error("配置出错");
+  }
 };
 const initListenXHR = () => {
   // 保存原始的 XMLHttpRequest open 和 send 方法
@@ -219,6 +225,7 @@ const initMonitor = () => {
   initListenXHR();
   initListenFetch();
   //初始化录制
+
   initRecordWeb();
 
   // 页面性能：
@@ -258,8 +265,7 @@ const initVueReport = (app) => {
       // `info` 提供了附加的错误信息，如生命周期钩子名称
       console.error("Error info:", err, instance, info);
 
-      report({
-        type: "Vue error",
+      report("Vue error", {
         err,
         instanceName: instance?.type?.name || "Anonymous Component",
         info,
