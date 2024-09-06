@@ -10,8 +10,8 @@
 
 2.为更多中小型的项目增加前端的报错监控。
 
-![Monitor](https://github.com/MriLiuJY/monitorFE/blob/master/docs-image/Monitor.gif "Monitor")
-![Monitor](https://github.com/MriLiuJY/monitorFE/blob/master/docs-image/demo.jpg "Monitor")
+![Monitor](https://github.com/yangxin9527/monitor/blob/master/docs-image/MonitorFE.gif "Monitor")
+![Monitor](https://github.com/yangxin9527/monitor/blob/master/docs-image/demo.jpg "Monitor")
 
 ## 使用
 
