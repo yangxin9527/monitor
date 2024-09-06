@@ -30,8 +30,8 @@ const report = (type, data = {}) => {
     if (monitor.config.record) {
       json.events = (monitor.recordData.slice(-2) as any).flat();
     }
-    if (monitor?.config?.id) {
-      json.id = monitor?.config?.id;
+    if (monitor?.config?.userId) {
+      json.userId = monitor?.config?.userId;
     }
     // 错误上报接口
     fetch(monitor.config.url, {

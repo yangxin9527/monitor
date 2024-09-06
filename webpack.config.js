@@ -3,7 +3,6 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const fs = require("fs");
-// const VersionPlugin = require("./webpack.version-plugin");
 
 const version = JSON.parse(fs.readFileSync("./version.json")).version;
 
@@ -26,15 +25,7 @@ module.exports = {
     compress: true,
     port: 3000,
     open: true,
-    proxy: [
-      // {
-      //   context: ["/api"], // 要代理的路径
-      //   target: "http://localhost:3001",
-      //   secure: false, // 如果是 https 的 API，需要设置为 true
-      //   changeOrigin: true, // 修改请求头中的 Origin 字段
-      //   pathRewrite: { "^/api": "" }, // 根据需要重写路径
-      // },
-    ],
+    proxy: [],
   },
   module: {
     rules: [
@@ -59,9 +50,6 @@ module.exports = {
       template: "./public/index.html",
       inject: "head", // 将 JavaScript 插入到 <head> 部分
     }),
-    // new VersionPlugin({
-    //   versionFile: "./version.json", // 传递 version.json 文件路径
-    // }),
     new CopyWebpackPlugin({
       patterns: [
         { from: "public/createError.js", to: "createError.js" },

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style></style>
+    <!-- Import style -->
+    <link
+      rel="stylesheet"
+      href="//cdn.jsdelivr.net/npm/element-plus/dist/index.css"
+    />
+    <!-- Import Vue 3 -->
+    <script src="//cdn.jsdelivr.net/npm/vue@3"></script>
+    <!-- Import component library -->
+    <script src="//cdn.jsdelivr.net/npm/element-plus"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/rrweb-player@latest/dist/style.css"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/rrweb-player@latest/dist/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <style>
+      .replay-div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h2>服务端查询错误</h2>
+      <el-segmented
+        v-model="timeGranularity"
+        :options="timeOptions"
+        size="large"
+        @change="timeChange"
+      ></el-segmented>
+      <div id="main" style="width: 100%; height: 30vh; margin-top: 20px"></div>
+      <el-table :data="data" border style="width: 100%">
+        <el-table-column prop="type" label="类型" width="120"></el-table-column>
+        <el-table-column
+          prop="userId"
+          label="用户标识"
+          show-overflow-tooltip
+          width="120"
+        ></el-table-column>
+
+        <el-table-column
+          prop="data"
+          label="简要"
+          :formatter="formatter"
+          show-overflow-tooltip
+          min-width="120"
+        >
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" width="120">
+          <template #default="scope">
+            <el-button
+              link
+              type="primary"
+              size="small"
+              @click="handleRePlay(scope.row)"
+            >
+              回放
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        layout="prev, pager, next"
+        v-model.number:current-page="currentPage"
+        @current-change="handleCurrentChange"
+        :page-count="totalPages"
+        :total="totalItems"
+      />
+    </div>
+    <div class="replay-div" id="js-replay-div"></div>
+
+    <script>
+      const App = {
+        data() {
+          return {
+            currentPage: 1,
+            totalItems: 10,
+            totalPages: 0,
+            data: [],
+            timeGranularity: "minute",
+            timeOptions: ["minute", "day"],
+          };
+        },
+        methods: {
+          formatter(row, column) {
+            let str = JSON.stringify(row.data);
+            if (str.length > 100) {
+              return str.substring(0, 100) + "...";
+            } else {
+              return str;
+            }
+          },
+          handleCurrentChange(page) {
+            this.initReplayBox();
+            this.currentPage = page;
+            this.getList({
+              page,
+            });
+          },
+          getList(params = {}) {
+            // 将对象转换为 URL 查询字符串
+            const queryString = new URLSearchParams(params).toString();
+            fetch(`/getReports?${queryString}`, {})
+              .then((res) => res.json())
+              .then((res) => {
+                this.currentPage = res.currentPage;
+                this.totalPages = res.totalPages;
+                this.totalItems = res.totalItems;
+                this.data = res.data;
+              });
+          },
+          initReplayBox() {
+            document.querySelector("#js-replay-div").innerHTML = "";
+          },
+          handleRePlay(row) {
+            this.initReplayBox();
+            this.rePlayEle = document.createElement("div");
+            document
+              .querySelector("#js-replay-div")
+              .appendChild(this.rePlayEle);
+            if (row.events) {
+              let aa = new rrwebPlayer({
+                target: this.rePlayEle,
+                data: { events: row.events },
+                unpackFn: rrwebPlayer.unpack,
+              });
+            } else {
+              alert("暂无错误记录");
+            }
+          },
+          timeChange(e) {
+            this.getChart(e);
+          },
+          getChart(type = this.timeGranularity) {
+            const queryString = new URLSearchParams({
+              type,
+            }).toString();
+            fetch(`/eChart?${queryString}`, {})
+              .then((res) => res.json())
+              .then((res) => {
+                renderChart(res, type);
+              });
+          },
+        },
+        mounted() {
+          this.getList();
+
+          this.getChart();
+        },
+      };
+      const app = Vue.createApp(App);
+      app.use(ElementPlus);
+      app.mount("#app");
+
+      const processAggregateResult = (result, timeGranularity = "day") => {
+        const dates = result.map((item) => {
+          const { year, month, day, hour, minute } = item._id;
+          return timeGranularity === "minute"
+            ? `${year}-${month}-${day} ${hour}:${minute}`
+            : `${year}-${month}-${day}`;
+        });
+
+        const types = [
+          ...new Set(result.flatMap((item) => item.types.map((t) => t.type))),
+        ]; // 获取所有的类型
+
+        // 初始化类型的计数数据
+        const data = types.reduce((acc, type) => {
+          acc[type] = new Array(dates.length).fill(0); // 创建一个与日期数组长度相同的数组
+          return acc;
+        }, {});
+
+        result.forEach((item) => {
+          const dateStr =
+            timeGranularity === "minute"
+              ? `${item._id.year}-${item._id.month}-${item._id.day} ${item._id.hour}:${item._id.minute}`
+              : `${item._id.year}-${item._id.month}-${item._id.day}`;
+          types.forEach((type) => {
+            const typeCount =
+              item.types.find((t) => t.type === type)?.count || 0;
+            const index = dates.indexOf(dateStr);
+            data[type][index] = typeCount;
+          });
+        });
+        console.log("打印dates", dates);
+        return {
+          dates,
+          types,
+          series: types.map((type) => ({
+            name: type,
+            type: "line",
+            smooth: true,
+            data: data[type],
+          })),
+        };
+      };
+
+      const renderChart = (res, timeGranularity = "day") => {
+        console.log("打印timeGranularity", timeGranularity);
+        const chartData = processAggregateResult(res, timeGranularity);
+
+        // ECharts 配置示例
+        const option = {
+          title: {
+            text: "错误统计",
+          },
+          tooltip: {
+            trigger: "axis",
+          },
+          legend: {
+            data: chartData.types,
+          },
+          xAxis: {
+            type: "category",
+            data: chartData.dates,
+          },
+          yAxis: {
+            type: "value",
+          },
+          series: chartData.series,
+        };
+
+        // 渲染到 ECharts
+        const chart = echarts.init(document.getElementById("main"));
+        chart.setOption(option);
+      };
+    </script>
+  </body>
+</html>

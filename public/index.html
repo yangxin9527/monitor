@@ -18,7 +18,12 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   </head>
   <body>
-    <h2>模拟错误(打开console 查看具体报错)</h2>
+    <h2>
+      模拟错误
+      <a style="margin-left: 40px; font-size: 16px" href="http://localhost:3001"
+        >后台查看报错和回放</a
+      >
+    </h2>
 
     <!-- ajax请求错误 -->
     <button class="err-ajax-request">ajax请求错误</button>
@@ -53,7 +58,7 @@
         window._monitor.init({
           url: "http://localhost:3001/reportData",
           record: true,
-          id: "test_id",
+          userId: "test_id",
         });
       });
     </script>
