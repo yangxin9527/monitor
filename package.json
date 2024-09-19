@@ -1,6 +1,6 @@
 {
   "name": "monitor",
-  "version": "0.0.1-beta",
+  "version": "0.0.2",
   "description": "Front End buried point",
   "main": "index.js",
   "scripts": {

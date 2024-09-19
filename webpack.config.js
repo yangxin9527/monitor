@@ -4,7 +4,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const fs = require("fs");
 
-const version = JSON.parse(fs.readFileSync("./version.json")).version;
+const version = JSON.parse(fs.readFileSync("./package.json")).version;
 const baseConfig = {
   entry: "./src/index.ts",
   resolve: {
