@@ -21,6 +21,8 @@ export const monitor = {
 const report = (type, data = {}) => {
   console.log("--------报错收集-------------");
   console.log(type, data);
+  console.log("打印monitor?.config", monitor?.config);
+  debugger;
   if (monitor?.config?.url) {
     //每次报错发送最近2次录制的内容
     let json: any = {
@@ -103,10 +105,10 @@ const initListenFetch = () => {
 
     try {
       const response = await originalFetch.apply(this, args);
-
       // 检查 HTTP 响应状态码
       if (!response.ok) {
         // 响应错误，记录并上报
+
         if (!url.includes("/reportData")) {
           report("fetch error", {
             url: args[0],

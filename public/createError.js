@@ -1,12 +1,12 @@
 
 const main = () => {
-// ajax请求错误
+  // ajax请求错误
   const ajaxRequestError = document.getElementsByClassName("err-ajax-request")[0];
   ajaxRequestError.onclick = function () {
     const xhr = new XMLHttpRequest();
     xhr.withCredentials = true;
     xhr.timeout = 3000;
-    xhr.open("get", "/api/ajaxerror", true);
+    xhr.open("get", "/api/test-ajax-error", true);
     xhr.setRequestHeader("content-type", "application/json;charset=utf-8");
     xhr.setRequestHeader("Accept", "application/json");
     xhr.send();
@@ -15,7 +15,7 @@ const main = () => {
   // fetch error
   const fetchEle = document.getElementsByClassName("fetch-request")[0];
   fetchEle.onclick = function () {
-    fetch("/api/save-data", {
+    fetch("/api/test-fetch-error", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -57,8 +57,8 @@ const main = () => {
   // js 执行错误
   const jsRunningerror = document.getElementsByClassName("js-running-error")[0];
   jsRunningerror.onclick = function () {
-  // @ts-ignore
-  // eslint-disable-next-line no-undef
+    // @ts-ignore
+    // eslint-disable-next-line no-undef
     jsRunningerrorssss;
   };
 
@@ -129,7 +129,7 @@ const main = () => {
     },
     methods: {
       handleClick: () => {
-      // 模拟 Vue 错误
+        // 模拟 Vue 错误
         throw new Error("模拟 Vue 实例创建时的错误");
       },
     },

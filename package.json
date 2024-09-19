@@ -4,7 +4,8 @@
   "description": "Front End buried point",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --mode production",
+    "clean": "rimraf dist",
+    "build": "npm run clean && webpack --mode production",
     "start": "webpack serve --mode development --open",
     "server": "nodemon server/index ",
     "test": "jest",
@@ -54,6 +55,7 @@
     "lint-staged": "^9.2.1",
     "mini-css-extract-plugin": "latest",
     "nodemon": "^3.1.4",
+    "rimraf": "^6.0.1",
     "rrweb": "^2.0.0-alpha.4",
     "style-loader": "latest",
     "terser-webpack-plugin": "^5.3.10",
