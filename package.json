@@ -46,7 +46,7 @@
     "clean-webpack-plugin": "latest",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "latest",
-    "eslint": "^5.16.0",
+    "eslint": "^8.0.0",
     "eslint-webpack-plugin": "latest",
     "express": "^4.17.1",
     "express-session": "^1.16.2",
