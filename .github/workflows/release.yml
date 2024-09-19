@@ -2,8 +2,8 @@ name: Create Release
 
 on:
   push:
-    branches:
-      - master # 监听 master 分支的 push 事件
+    tags:
+      - "v*" # 只对以 "v" 开头的标签进行操作
 
 jobs:
   release:
@@ -27,24 +27,16 @@ jobs:
       - name: Create ZIP of dist
         run: zip -r dist.zip dist # 将 dist 目录打包为 dist.zip
 
-      - name: Create a new Git tag
-        id: tag
-        run: |
-          VERSION=$(node -p "require('./package.json').version")
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          git tag "v$VERSION"
-          git push origin "v$VERSION"
-
       - name: Create Release
         id: release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 用于创建 GitHub Release
         with:
-          tag_name: "v${{ env.VERSION }}"
-          release_name: Release ${{ env.VERSION }}
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
           body: |
-            Release notes for version ${{ env.VERSION }}
+            Release notes for version ${{ github.ref }}
 
       - name: Upload Release Asset
         id: upload-release-asset
